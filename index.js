@@ -6,6 +6,17 @@
 function main() {
   console.log('hello world');
 
+  var charfield = document.getElementById("char")
+  if (charfield) {
+    charfield.onkeypress = function(e){
+      var e = window.event || e;
+      alert(e.keyCode);
+    }
+  } else {
+    console.log("null event");
+  }
+
+
   fetch("http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2019-05-09&sportId=1")
   .then(function(response) {
     return response.json();
