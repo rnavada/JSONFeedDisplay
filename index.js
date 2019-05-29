@@ -6,9 +6,9 @@
 function main() {
   console.log('hello world');
 
-  var charfield = document.getElementById("char")
-  if (charfield) {
-    charfield.onkeypress = function(e){
+  var page = document.getElementById("container")
+  if (page) {
+    page.onkeypress = function(e){
       var e = window.event || e;
       alert(e.keyCode);
     }
