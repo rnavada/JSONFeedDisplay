@@ -6,7 +6,7 @@ let keyLeft = 37;
 let keyRight = 39;
 let jsonResponse = {};
 let defaultSelection = 4;
-let date = "2019-05-08";
+let date = "2019-05-28";
 let prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
 let postfix = "&sportId=1"
 let maxItems = 16;
@@ -42,20 +42,25 @@ function textUnselect (oldSelection) {
 function textSelect (newSelection) {
   console.log('textSelect - ', newSelection);
 
+  let game = jsonResponse.games[newSelection - 1];
+
   if (jsonResponse && jsonResponse.games && jsonResponse.games[newSelection - 1]) {
     let gameDescriptionBox = document.getElementById("game" + (newSelection) + 'Description');
     let teams = jsonResponse.games[newSelection-1].teams;
     if (teams && teams.home && teams.home.team && teams.home.team.name) {
-      console.log('teams - ',  teams.home.team.name, teams.away.team.name);
-      let string = teams.home.team.name + " Vs " + teams.away.team.name;  
-      let score =  ' Score:  ' + teams.home.score + '-' + teams.away.score + '';
-
-      gameDescriptionBox.innerHTML = string + "<br />" + score;
+      console.log('teams - ',  teams);
+      let team = teams.home.team.name + ' ' + teams.home.score + ", " + teams.away.team.name + ' '+ teams.away.score;  
+      let winner = game.decisions.winner.fullName;
+      let loser = game.decisions.loser.fullName;
+      winner = 'winner: ' + winner;
+      loser = 'Loser: ' + loser;
       gameDescriptionBox.style.fontSize = "15px";
       gameDescriptionBox.style.color = "orange";
-      gameDescriptionBox.style.marginTop = "20px";
+      gameDescriptionBox.style.marginTop = "60px";
       gameDescriptionBox.style.marginLeft = "1px";
       gameDescriptionBox.style.position = "absolute";
+      gameDescriptionBox.style.lineheight = "0px";
+      gameDescriptionBox.innerHTML = team + "<br />" + winner + "<br />" + loser + "<br />";
     }
   }
 }
@@ -81,7 +86,7 @@ function init () {
       gameHeaderBox.innerHTML = venue.name;
       gameHeaderBox.style.fontSize = "large";
       gameHeaderBox.style.color = "orange";
-      gameHeaderBox.style.marginBottom = "8px";
+      gameHeaderBox.style.marginBottom = "50px";
     }
 
     if (jsonResponse.games && jsonResponse.games[i] && jsonResponse.games[i].content && jsonResponse.games[i].content.editorial) {
