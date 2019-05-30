@@ -5,56 +5,19 @@
     background-image: url("http://mlb.mlb.com/mlb/images/devices/ballpark/1920x1080/1.jpg");
 }
 
-.flex-container-headline {
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    left: 0;
-    top: 30%;
-    }
-
-.flex-container-headline > div {
-    width: 200px;
-    margin: 20px;
-    text-align: center;
-    line-height: 100px;
-    font-size: 25px;
-    border: 3px solid transparent;
-    border-radius: 3px;
-}
-          
-.flex-container-description {
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    left: 0;
-    top: 60%;
-    }
-
-.flex-container-description > div {
-    width: 200px;
-    margin: 25px;
-    line-height: 100px;
-    font-size: 15px;
-    border: 3px solid transparent;
-}
-
 .flex-container {
   position: absolute;
   display: flex;
   flex-direction: row;
   left: 80;
-  top: 45%;
+  top: 30%;
   }
   
 .flex-container > div {
-  background-color: grey;
   width: 248px;
-  height: 138px;
-  margin: 20px;
-  text-align: center;
+  height: 238px;
+  margin: 15px;
   line-height: 100px;
-  font-size: 25px;
   border-radius: 3px;
 }
 

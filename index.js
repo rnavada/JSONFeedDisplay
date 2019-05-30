@@ -14,81 +14,91 @@ let selectedImageIndex = 14;
 let currentSelection = {};
 
 function scaleDown (box) {
-  let game = document.getElementById("game" + box);
-  game.style.backgroundColor = "grey";
+  let game = document.getElementById("game" + box + 'Image');
+  
   game.style.boxShadow = "";
   game.style.transform = "scale(1, 1)";
   game.style.borderColor = "";
 }
 
 function scaleUp (box) {
-  let game = document.getElementById("game" + box);
-  game.style.backgroundColor = "#0f82db";
+  let game = document.getElementById("game" + box + 'Image');
+  
   game.style.boxShadow = ".3rem .3rem .3rem whitesmoke";
-  game.style.transform = "scale(1.2, 1.7)";
+  game.style.transform = "scale(1.2, 1.6)";
   game.style.borderColor = "white";
 } 
 
 
 function textUnselect (oldSelection) {
-  console.log('textUnselect - ', oldSelection);
-
-  let game = document.getElementById("game" + oldSelection + "Headline");
-  game.style.backgroundColor = "";
-  game.style.color = "";
-  game.innerHTML = "";
-
-  let description = document.getElementById("game" + oldSelection + "Description");
-  description.style.color = "";
-  description.innerHTML = "";
-  
+  let gameDescriptionBox = document.getElementById("game" + (oldSelection) + 'Description');
+  let teams = jsonResponse.games[oldSelection-1].teams;
+  if (teams && teams.home && teams.home.team && teams.home.team.name) {
+    gameDescriptionBox.innerHTML = "";
+    gameDescriptionBox.style.color = "";
+  }
 }
 
 function textSelect (newSelection) {
+  console.log('textSelect - ', newSelection);
+
   if (jsonResponse && jsonResponse.games && jsonResponse.games[newSelection - 1]) {
-    let venue = jsonResponse.games[newSelection - 1].venue;
-    if (venue && venue.name) {
-      console.log('venue - ',  venue.name);
-      let headline = document.getElementById("game" + newSelection + "Headline");
-      headline.style.color = "orange";
-      headline.innerHTML = venue.name;
-    }
-
-    let teams = jsonResponse.games[newSelection - 1].teams;
+    let gameDescriptionBox = document.getElementById("game" + (newSelection) + 'Description');
+    let teams = jsonResponse.games[newSelection-1].teams;
     if (teams && teams.home && teams.home.team && teams.home.team.name) {
-      console.log('team - ',  teams.home.team.name);
-      console.log('team - ',  teams.away.team.name);
+      console.log('teams - ',  teams.home.team.name, teams.away.team.name);
+      let string = teams.home.team.name + " Vs " + teams.away.team.name;  
+      let score =  ' Score:  ' + teams.home.score + '-' + teams.away.score + '';
 
-
-      let description = document.getElementById("game" + newSelection + "Description");
-      description.style.color = "orange";
-      description.innerHTML = teams.home.team.name + " Vs " + teams.away.team.name;
+      gameDescriptionBox.innerHTML = string + "<br />" + score;
+      gameDescriptionBox.style.fontSize = "15px";
+      gameDescriptionBox.style.color = "orange";
+      gameDescriptionBox.style.marginTop = "20px";
+      gameDescriptionBox.style.marginLeft = "1px";
+      gameDescriptionBox.style.position = "absolute";
     }
-  }  
+  }
 }
 
-function setImages () {
-  console.log('setImages');
-
+function init () {
+  
   let game;
-  let url;
+  
+  maxItems = jsonResponse.totalItems;
+  currentSelection.box = defaultSelection;
 
   for(let i = 0; i < maxItems; i++) {
-    game = document.getElementById("game" + (i+1));
+    let url;
+    let gameImageBox;
+    let gameHeaderBox;
     let editorial;
+    let venue;
+    
+    gameHeaderBox = document.getElementById('game' + (i+1) + 'Header');
+    venue = jsonResponse.games[i].venue;
+    if (venue && venue.name) {
+      console.log('venue - ',  venue.name);
+      gameHeaderBox.innerHTML = venue.name;
+      gameHeaderBox.style.fontSize = "large";
+      gameHeaderBox.style.color = "orange";
+      gameHeaderBox.style.marginBottom = "8px";
+    }
+
     if (jsonResponse.games && jsonResponse.games[i] && jsonResponse.games[i].content && jsonResponse.games[i].content.editorial) {
       editorial = jsonResponse.games[i].content.editorial;
     }
 
     if (editorial) {
-      if (editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && 
-        editorial.recap.mlb.photo.cuts && editorial.recap.mlb.photo.cuts[selectedImageIndex] && editorial.recap.mlb.photo.cuts[selectedImageIndex].src) {
-        url = "url(" + editorial.recap.mlb.photo.cuts[selectedImageIndex].src + ")";
-        console.log('backgroundImage str - ', url);
-        game.style.backgroundImage = url;
-      }
-    }
-  }  
+      gameImageBox = document.getElementById('game' + (i+1) + 'Image');
+      let url = 'url(' + editorial.recap.mlb.photo.cuts[selectedImageIndex].src + ')';
+      gameImageBox.style.backgroundImage = url;
+      gameImageBox.style.height = '55%';
+    } 
+  }
+
+  scaleUp(defaultSelection);
+  textSelect(defaultSelection);
+
 }
 
 function onKeydown (e) {
@@ -119,6 +129,7 @@ function onKeydown (e) {
   currentSelection.box = newSelection;
 }
 
+
 function main() {
 
   document.addEventListener('keydown', onKeydown);
@@ -131,10 +142,8 @@ function main() {
       console.log('response ', json.dates[0]);
       console.log('Items ', json.dates[0].totalItems);
       jsonResponse = json.dates[0];
-      currentSelection.box = defaultSelection;
-      setImages();
-      scaleUp(currentSelection.box);
-      textSelect(currentSelection.box);
+      
+      init();
     } else {
       console.log('No data in response');
     }
