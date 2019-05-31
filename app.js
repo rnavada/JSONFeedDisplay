@@ -15,9 +15,9 @@ function mlbSelected () {
   var input = document.getElementById('gameday').value;
   if(input){
     console.log(input);
-    url = './mlb.html?date=' + input;
+    url = './mlb/mlb.html?date=' + input;
   } else {
-    url = './mlb.html?date=' + getDate();
+    url = './mlb/mlb.html?date=' + getDate();
   }
 
   if (url) {
