@@ -1,8 +1,7 @@
 
-(function (){
+let mlb  = (function (){
+
   'use strict';
-  let defaultDate = "2019-05-29";
-  let isTodayData = false; //Set this to true if you want today's info
   let defaultSelection = 4;
   let maxItems = 16;
   let selectedImageIndex = 14; //Index of the Photo from editorial object
@@ -186,33 +185,33 @@
     currentSelection.box = newSelection;
   }
 
- //var raghavDate = 
-  function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-      vars[key] = value;
-    });
-    return vars;
+  return {
+    displayResults: function (date) {
+      let url =  prefix + date + postfix;
+      fetch(url)
+      .then(response => response.json())
+      .then((json) => {
+        if (json && json.dates && json.dates[0]) {
+          console.log('response ', json.dates[0]);
+          console.log('Items ', json.dates[0].totalItems);
+          jsonResponse = json.dates[0];
+          init();
+        } else {
+          console.log('No data in response');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
   }
-
-  function main() {
-    let url =  prefix + getUrlVars().date + postfix;
-    fetch(url)
-    .then(response => response.json())
-    .then((json) => {
-      if (json && json.dates && json.dates[0]) {
-        console.log('response ', json.dates[0]);
-        console.log('Items ', json.dates[0].totalItems);
-        jsonResponse = json.dates[0];
-        
-        init();
-      } else {
-        console.log('No data in response');
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
-  main();
 })();
 
+ 
+mlb.displayResults(getUrlVars().date);
+
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+  });
+  return vars;
+}
