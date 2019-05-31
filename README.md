@@ -1,6 +1,6 @@
 # JSONFeedDisplay
 
-# Build
+# Running the Application
 
 # Configuration
 

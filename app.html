@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <style>
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 200px;
+        background-color: #f1f1f1;
+      }
+
+      li a {
+        display: block;
+        color: #000;
+        padding: 8px 16px;
+        text-decoration: none;
+      }
+
+      /* Change the link color on hover */
+      li a:hover {
+      background-color: #555;
+      color: grey;
+      }
+    </style>
+  </head>
+  
+  <body>
+
+    <h2>News App</h2>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#NFL">NFL</a></li>
+      <li><a href="#MLB" onclick="mlbSelected()">MLB</a></li>
+    </ul>
+    <form>
+      For MLB Page, Enter the date:
+      <input type="date" input id="gameday">
+    </form>
+    <script type="text/javascript" src="./app.js"></script>
+   
+  <body>
+
+
+</html>
+
+
