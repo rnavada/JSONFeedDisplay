@@ -1,8 +1,7 @@
 .container, html, body {
-    height: 100%;
-    padding:1;
-    margin: 1;
-    background-image: url("http://mlb.mlb.com/mlb/images/devices/ballpark/1920x1080/1.jpg");
+  height: 100%;
+  background-image: url("http://mlb.mlb.com/mlb/images/devices/ballpark/1920x1080/1.jpg");
+  overflow: hidden; 
 }
 
 .flex-container {

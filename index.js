@@ -1,10 +1,6 @@
-/*
- * Q!.
- * 
- */
 let defaultDate = "2019-05-29";
 let isTodayData = false; //Set this to true if you want today's info
-let defaultSelection = 2;
+let defaultSelection = 4;
 let maxItems = 16;
 let selectedImageIndex = 14; //Index of the Photo from editorial object
 let prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
@@ -13,6 +9,9 @@ let keyLeft = 37;
 let keyRight = 39;
 let jsonResponse = {};
 let currentSelection = {};
+let i = 1;
+let gamesContainerLeftPos = 0;
+
 
 function scaleDown (box) {
   let game = document.getElementById("game" + box + 'Image');
@@ -24,12 +23,14 @@ function scaleDown (box) {
 
 function scaleUp (box) {
   let game = document.getElementById("game" + box + 'Image');
+
   game.style.boxShadow = ".3rem .3rem .3rem whitesmoke";
+  game.style.transitionDuration = "3s";
   game.style.transform = "scale(1.2, 1.6)";
 } 
 
 
-function textUnselect (oldSelection) {
+function deleteText (oldSelection) {
   let gameDescriptionBox = document.getElementById("game" + (oldSelection) + 'Description');
   let teams = jsonResponse.games[oldSelection-1].teams;
   if (teams && teams.home && teams.home.team && teams.home.team.name) {
@@ -38,13 +39,13 @@ function textUnselect (oldSelection) {
   }
 }
 
-function textSelect (newSelection) {
-  console.log('textSelect - ', newSelection);
+function insertText (newSelection) {
+  console.log('insertText - ', newSelection);
 
   let game; 
   if (jsonResponse && jsonResponse.games && jsonResponse.games[newSelection - 1]) {
     game = jsonResponse.games[newSelection - 1];
-    console.log('game - ', game);
+    //console.log('game - ', game);
   }
 
   if (game) {
@@ -53,7 +54,7 @@ function textSelect (newSelection) {
     
     if (teams && teams.home && teams.away && teams.home.team && teams.away.team && teams.home.team.name && teams.away.team.name &&
       (typeof teams.home.score === 'number') && (typeof teams.away.score === 'number')) {
-      console.log('teams - ',  teams);
+      //console.log('teams - ',  teams);
       let team = teams.home.team.name + ' ' + teams.home.score + ", " + teams.away.team.name + ' '+ teams.away.score;  
       let winner;
       let loser;
@@ -75,6 +76,7 @@ function textSelect (newSelection) {
         gameDescriptionBox.style.marginLeft = "1px";
         gameDescriptionBox.style.position = "absolute";
         gameDescriptionBox.style.lineheight = "0px";
+        gameDescriptionBox.style.transitionDuration = "3s";
         gameDescriptionBox.innerHTML = team + "<br />" + winner + "<br />" + loser + "<br />";
       }
     }
@@ -117,18 +119,17 @@ function init () {
         gameImageBox.style.backgroundImage = url;
         gameImageBox.style.height = '55%';
       }
-      
     } 
   }
-
+  console.log('about to insert text ');
   scaleUp(defaultSelection);
-  textSelect(defaultSelection);
+  insertText(defaultSelection);
   document.addEventListener('keydown', onKeydown);
 
 }
 
-function onKeydown (e) {
 
+function onKeydown (e) {
   console.log('onKeydown - ', e.keyCode, e);
 
   if (e.keyCode !== keyLeft && e.keyCode !== keyRight) {
@@ -141,18 +142,46 @@ function onKeydown (e) {
   if((oldSelection == 1 && e.keyCode === keyLeft) || ((oldSelection == maxItems && e.keyCode === keyRight))) 
     return;
   
+  let gamesContainer = document.getElementById("flex-container");
   if (e.keyCode === keyLeft) {
     newSelection--;
-  }
-  if (e.keyCode === keyRight) {
-    newSelection++;
+    let newLeft = (220 * i);
+    console.log('newSelection ' + newSelection + ' i ' + i);
+    var id = setInterval(() => {
+      if (gamesContainerLeftPos >= newLeft) {
+        console.log('gamesContainerLeftPos ', gamesContainerLeftPos);
+        clearInterval(id);
+      } else {
+        gamesContainerLeftPos = gamesContainerLeftPos + 1; 
+        gamesContainer.style.left = gamesContainerLeftPos + 'px'; 
+        
+      }
+    }, 3);
+    i++;
   }
 
+  if (e.keyCode === keyRight) {
+    newSelection++;
+    let newLeft = (220 * i);
+    console.log('newSelection ' + newSelection + ' i ' + i);
+    let id = setInterval(() => {
+      if (gamesContainerLeftPos <= newLeft) {
+        console.log('gamesContainerLeftPos ', gamesContainerLeftPos);
+        clearInterval(id);
+
+      } else {
+        gamesContainerLeftPos = gamesContainerLeftPos - 1; 
+        gamesContainer.style.left = gamesContainerLeftPos + 'px'; 
+      }
+    }, 3);
+    i--;
+  }
   scaleDown(oldSelection);
   scaleUp(newSelection);
-  textUnselect(oldSelection);
-  textSelect(newSelection);
+  deleteText(oldSelection);
+  insertText(newSelection);
   currentSelection.box = newSelection;
+
 }
 
 function getDate () {
