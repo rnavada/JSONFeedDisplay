@@ -2,20 +2,20 @@
 let mlb  = (function (){
 
   'use strict';
-  let defaultSelection = 4;
-  let maxItems = 16;
-  let selectedImageIndex = 14; //Index of the Photo from editorial object
-  let prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
-  let postfix = "&sportId=1"
-  let keyLeft = 37;
-  let keyRight = 39;
-  let jsonResponse = {};
-  let currentSelection = {};
-  let i = 1;
-  let gamesContainerLeftPos = 0;
+  let _defaultSelection = 4;
+  let _maxItems = 16;
+  let _selectedImageIndex = 14; //Index of the Photo from editorial object
+  let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
+  let _postfix = "&sportId=1"
+  let _keyLeft = 37;
+  let _keyRight = 39;
+  let _jsonResponse = {};
+  let _currentSelection = {};
+  let _i = 1;
+  let _gamesContainerLeftPos = 0;
 
 
-  function scaleDown (box) {
+  function _scaleDown (box) {
     let game = document.getElementById("game" + box + 'Image');
     
     game.style.boxShadow = "";
@@ -23,7 +23,7 @@ let mlb  = (function (){
     game.style.borderColor = "";
   }
 
-  function scaleUp (box) {
+  function _scaleUp (box) {
     let game = document.getElementById("game" + box + 'Image');
 
     game.style.boxShadow = ".3rem .3rem .3rem whitesmoke";
@@ -32,21 +32,21 @@ let mlb  = (function (){
   } 
 
 
-  function deleteText (oldSelection) {
+  function _deleteText (oldSelection) {
     let gameDescriptionBox = document.getElementById("game" + (oldSelection) + 'Description');
-    let teams = jsonResponse.games[oldSelection-1].teams;
+    let teams = _jsonResponse.games[oldSelection-1].teams;
     if (teams && teams.home && teams.home.team && teams.home.team.name) {
       gameDescriptionBox.innerHTML = "";
       gameDescriptionBox.style.color = "";
     }
   }
 
-  function insertText (newSelection) {
+  function _insertText (newSelection) {
     console.log('insertText - ', newSelection);
 
     let game; 
-    if (jsonResponse && jsonResponse.games && jsonResponse.games[newSelection - 1]) {
-      game = jsonResponse.games[newSelection - 1];
+    if (_jsonResponse && _jsonResponse.games && _jsonResponse.games[newSelection - 1]) {
+      game = _jsonResponse.games[newSelection - 1];
       //console.log('game - ', game);
     }
 
@@ -85,14 +85,14 @@ let mlb  = (function (){
     }
   }
 
-  function init () {
+  function _init () {
     
     let game;
     
-    maxItems = jsonResponse.totalItems;
-    currentSelection.box = defaultSelection;
+    _maxItems = _jsonResponse.totalItems;
+    _currentSelection.box = _defaultSelection;
 
-    for(let i = 0; i < maxItems; i++) {
+    for(let i = 0; i < _maxItems; i++) {
       let url;
       let gameImageBox;
       let gameHeaderBox;
@@ -100,7 +100,7 @@ let mlb  = (function (){
       let venue;
       
       gameHeaderBox = document.getElementById('game' + (i+1) + 'Header');
-      venue = jsonResponse.games[i].venue;
+      venue = _jsonResponse.games[i].venue;
       if (venue && venue.name) {
         console.log('venue - ',  venue.name);
         gameHeaderBox.innerHTML = venue.name;
@@ -109,93 +109,93 @@ let mlb  = (function (){
         gameHeaderBox.style.marginBottom = "50px";
       }
 
-      if (jsonResponse.games && jsonResponse.games[i] && jsonResponse.games[i].content && jsonResponse.games[i].content.editorial) {
-        editorial = jsonResponse.games[i].content.editorial;
+      if (_jsonResponse.games && _jsonResponse.games[i] && _jsonResponse.games[i].content && _jsonResponse.games[i].content.editorial) {
+        editorial = _jsonResponse.games[i].content.editorial;
       }
 
       if (editorial) {
         if (editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && editorial.recap.mlb.photo.cuts &&
-          editorial.recap.mlb.photo.cuts[selectedImageIndex] && editorial.recap.mlb.photo.cuts[selectedImageIndex].src) {
+          editorial.recap.mlb.photo.cuts[_selectedImageIndex] && editorial.recap.mlb.photo.cuts[_selectedImageIndex].src) {
           gameImageBox = document.getElementById('game' + (i+1) + 'Image');
-          let url = 'url(' + editorial.recap.mlb.photo.cuts[selectedImageIndex].src + ')';
+          let url = 'url(' + editorial.recap.mlb.photo.cuts[_selectedImageIndex].src + ')';
           gameImageBox.style.backgroundImage = url;
           gameImageBox.style.height = '55%';
         }
       } 
     }
     console.log('about to insert text ');
-    scaleUp(defaultSelection);
-    insertText(defaultSelection);
-    document.addEventListener('keydown', onKeydown);
+    _scaleUp(_defaultSelection);
+    _insertText(_defaultSelection);
+    document.addEventListener('keydown', _onKeydown);
 
   }
 
 
-  function onKeydown (e) {
+  function _onKeydown (e) {
     console.log('onKeydown - ', e.keyCode, e);
 
-    if (e.keyCode !== keyLeft && e.keyCode !== keyRight) {
+    if (e.keyCode !== _keyLeft && e.keyCode !== _keyRight) {
       return;
     }
 
-    let oldSelection = currentSelection.box;
-    let newSelection = currentSelection.box;
+    let oldSelection = _currentSelection.box;
+    let newSelection = _currentSelection.box;
 
-    if((oldSelection == 1 && e.keyCode === keyLeft) || ((oldSelection == maxItems && e.keyCode === keyRight))) 
+    if((oldSelection == 1 && e.keyCode === _keyLeft) || ((oldSelection == _maxItems && e.keyCode === _keyRight))) 
       return;
     
     let gamesContainer = document.getElementById("flex-container");
-    if (e.keyCode === keyLeft) {
+    if (e.keyCode === _keyLeft) {
       newSelection--;
-      let newLeft = (220 * i);
-      console.log('newSelection ' + newSelection + ' i ' + i);
+      let newLeft = (220 * _i);
+      console.log('newSelection ' + newSelection + ' i ' + _i);
       var id = setInterval(() => {
-        if (gamesContainerLeftPos >= newLeft) {
-          console.log('gamesContainerLeftPos ', gamesContainerLeftPos);
+        if (_gamesContainerLeftPos >= newLeft) {
+          console.log('_gamesContainerLeftPos ', _gamesContainerLeftPos);
           clearInterval(id);
         } else {
-          gamesContainerLeftPos = gamesContainerLeftPos + 1; 
-          gamesContainer.style.left = gamesContainerLeftPos + 'px'; 
+          _gamesContainerLeftPos = _gamesContainerLeftPos + 1; 
+          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
           
         }
       }, 3);
-      i++;
+      _i++;
     }
 
-    if (e.keyCode === keyRight) {
+    if (e.keyCode === _keyRight) {
       newSelection++;
-      let newLeft = (220 * i);
-      console.log('newSelection ' + newSelection + ' i ' + i);
+      let newLeft = (220 * _i);
+      console.log('newSelection ' + newSelection + ' i ' + _i);
       let id = setInterval(() => {
-        if (gamesContainerLeftPos <= newLeft) {
-          console.log('gamesContainerLeftPos ', gamesContainerLeftPos);
+        if (_gamesContainerLeftPos <= newLeft) {
+          console.log('_gamesContainerLeftPos ', _gamesContainerLeftPos);
           clearInterval(id);
 
         } else {
-          gamesContainerLeftPos = gamesContainerLeftPos - 1; 
-          gamesContainer.style.left = gamesContainerLeftPos + 'px'; 
+          _gamesContainerLeftPos = _gamesContainerLeftPos - 1; 
+          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
         }
       }, 3);
-      i--;
+      _i--;
     }
-    scaleDown(oldSelection);
-    scaleUp(newSelection);
-    deleteText(oldSelection);
-    insertText(newSelection);
-    currentSelection.box = newSelection;
+    _scaleDown(oldSelection);
+    _scaleUp(newSelection);
+    _deleteText(oldSelection);
+    _insertText(newSelection);
+    _currentSelection.box = newSelection;
   }
 
   return {
     displayResults: function (date) {
-      let url =  prefix + date + postfix;
+      let url =  _prefix + date + _postfix;
       fetch(url)
       .then(response => response.json())
       .then((json) => {
         if (json && json.dates && json.dates[0]) {
           console.log('response ', json.dates[0]);
           console.log('Items ', json.dates[0].totalItems);
-          jsonResponse = json.dates[0];
-          init();
+          _jsonResponse = json.dates[0];
+          _init();
         } else {
           console.log('No data in response');
         }
