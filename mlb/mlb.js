@@ -12,9 +12,11 @@ let mlb  = (function (){
   const GAME_BOX_WIDTH = 240;
   const TEXT_TRANSITION_DURATION_SECONDS = 4;
   const IMAGE_SCALE_DURATION_SECONDS = 3;
+  const GAMES_CONTAINER_TRANSITION_DURATION_SECONDS = 3;
   const IMAGE_SCALE_X = 1.2;
   const IMAGE_SCALE_Y = 1.6;
   const GAME_IMAGE_BOX_HEIGHT_PERCENT = 55;
+  const EDITORIAL_IMAGE_INDEX = 14; 
 
   /* Description Text Values */
   const GAME_DESCRIPTION_BOX_FONT_SIZE = 15;
@@ -30,11 +32,9 @@ let mlb  = (function (){
   const GAME_HEADER_BOX_MARGIN_BOTTOM = 50;
 
   let _noOfItems; 
-  let _selectedImageIndex = 14; //Index of the Photo from editorial object
   let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
   let _postfix = "&sportId=1"
 
-  
   let _jsonResponse = {};
   let _currentSelection = {};
   let _gamesContainerLeftPos = 0;
@@ -107,6 +107,54 @@ let mlb  = (function (){
     }
   }
 
+  
+
+  function _onKeydown (e) {
+    console.log('onKeydown - ', e.keyCode, e);
+
+    if (e.keyCode !== KEY_LEFT && e.keyCode !== KEY_RIGHT) {
+      return;
+    }
+
+    let oldSelection = _currentSelection.box;
+    let newSelection = _currentSelection.box;
+
+    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _noOfItems && e.keyCode === KEY_RIGHT))) 
+      return;
+    
+    let gamesContainer = document.getElementById("flex-container");
+    if (e.keyCode === KEY_LEFT) {
+      newSelection--;
+      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
+      var id = setInterval(() => {
+        if (_gamesContainerLeftPos >= newLeft) {
+          clearInterval(id);
+        } else {
+          _gamesContainerLeftPos = _gamesContainerLeftPos + 1; 
+          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
+        }
+      }, GAMES_CONTAINER_TRANSITION_DURATION_SECONDS);
+    }
+
+    if (e.keyCode === KEY_RIGHT) {
+      newSelection++;
+      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
+      let id = setInterval(() => {
+        if (_gamesContainerLeftPos <= newLeft) {
+          clearInterval(id);
+        } else {
+          _gamesContainerLeftPos = _gamesContainerLeftPos - 1; 
+          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
+        }
+      }, GAMES_CONTAINER_TRANSITION_DURATION_SECONDS);
+    }
+    _scaleDown(oldSelection);
+    _scaleUp(newSelection);
+    _deleteText(oldSelection);
+    _insertText(newSelection);
+    _currentSelection.box = newSelection;
+  }
+
   function _init () {
     
     let game;
@@ -136,9 +184,9 @@ let mlb  = (function (){
       }
 
       if (editorial && editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && editorial.recap.mlb.photo.cuts &&
-        editorial.recap.mlb.photo.cuts[_selectedImageIndex] && editorial.recap.mlb.photo.cuts[_selectedImageIndex].src) {
+        editorial.recap.mlb.photo.cuts[EDITORIAL_IMAGE_INDEX] && editorial.recap.mlb.photo.cuts[EDITORIAL_IMAGE_INDEX].src) {
         gameImageBox = document.getElementById('game' + (i+1) + 'Image');
-        let url = 'url(' + editorial.recap.mlb.photo.cuts[_selectedImageIndex].src + ')';
+        let url = 'url(' + editorial.recap.mlb.photo.cuts[EDITORIAL_IMAGE_INDEX].src + ')';
         gameImageBox.style.backgroundImage = url;
         gameImageBox.style.height = GAME_IMAGE_BOX_HEIGHT_PERCENT + '%';
       }
@@ -151,52 +199,6 @@ let mlb  = (function (){
 
   }
 
-
-  function _onKeydown (e) {
-    console.log('onKeydown - ', e.keyCode, e);
-
-    if (e.keyCode !== KEY_LEFT && e.keyCode !== KEY_RIGHT) {
-      return;
-    }
-
-    let oldSelection = _currentSelection.box;
-    let newSelection = _currentSelection.box;
-
-    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _noOfItems && e.keyCode === KEY_RIGHT))) 
-      return;
-    
-    let gamesContainer = document.getElementById("flex-container");
-    if (e.keyCode === KEY_LEFT) {
-      newSelection--;
-      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
-      var id = setInterval(() => {
-        if (_gamesContainerLeftPos >= newLeft) {
-          clearInterval(id);
-        } else {
-          _gamesContainerLeftPos = _gamesContainerLeftPos + 1; 
-          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
-        }
-      }, 3);
-    }
-
-    if (e.keyCode === KEY_RIGHT) {
-      newSelection++;
-      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
-      let id = setInterval(() => {
-        if (_gamesContainerLeftPos <= newLeft) {
-          clearInterval(id);
-        } else {
-          _gamesContainerLeftPos = _gamesContainerLeftPos - 1; 
-          gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
-        }
-      }, 3);
-    }
-    _scaleDown(oldSelection);
-    _scaleUp(newSelection);
-    _deleteText(oldSelection);
-    _insertText(newSelection);
-    _currentSelection.box = newSelection;
-  }
 
   return {
     /**

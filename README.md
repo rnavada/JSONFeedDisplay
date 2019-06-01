@@ -19,6 +19,7 @@ navigate through with the keyboard, left and right.
   6. From the vertical Navigation bar select MLB. The list page will be displayed.
   7. If you dont enter any date, the app will display results for that particular day.
   
+## Application screenshots
 
 ## Testing
   The project has been tested only on Chrome and Firefox browsers.
