@@ -1,15 +1,17 @@
-# JSONFeedDisplay  
-Parse out the data for each game in the MLB JSON feed, and construct a simple list that the user can
- navigate through with the keyboard (or remote), left and right.
+JSONFeedDisplay  
+---------------
 
-# Running the Application
+This project parses out the data for each game in the MLB JSON feed, and construct a simple list that the user can
+navigate through with the keyboard, left and right.
+
+## Requirements
+  * Your favorite text editor
+  * An HTML5 compliant browser
+  * A webserver on which to host the sample
+
+## Running the Application
   1. git clone https://github.com/rnavada/JSONFeedDisplay.git
   2. cd JSONFeedDisplay
-
-# Configuration
-
-
-# Known issues
 
 ## Run Test
 
