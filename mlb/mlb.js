@@ -1,22 +1,43 @@
 
+
+/** @module mlb */
+
 let mlb  = (function (){
 
   'use strict';
 
-  let _defaultSelection = 4;
-  let _maxItems = 16;
+  const KEY_LEFT = 37;
+  const KEY_RIGHT = 39;
+  const INITIAL_SCALED_GAME = 4
+  const GAME_BOX_WIDTH = 240;
+  const TEXT_TRANSITION_DURATION_SECONDS = 4;
+  const IMAGE_SCALE_DURATION_SECONDS = 3;
+  const IMAGE_SCALE_X = 1.2;
+  const IMAGE_SCALE_Y = 1.6;
+  const GAME_IMAGE_BOX_HEIGHT_PERCENT = 55;
+
+  /* Description Text Values */
+  const GAME_DESCRIPTION_BOX_FONT_SIZE = 15;
+  const GAME_DESCRIPTION_BOX_COLOR = "orange";
+  const GAME_DESCRIPTION_MARGIN_TOP = 60;
+  const GAME_DESCRIPTION_MARGIN_LEFT = 1;
+  const GAME_DESCRIPTION_POSITION = "absolute";
+  const GAME_DESCRIPTION_LINE_HEIGHT = 0;
+
+  /* Header Text Values */
+  const GAME_HEADER_BOX_FONT_SIZE = "large";
+  const GAME_HEADER_BOX_COLOR = "orange";
+  const GAME_HEADER_BOX_MARGIN_BOTTOM = 50;
+
+  let _noOfItems; 
   let _selectedImageIndex = 14; //Index of the Photo from editorial object
   let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
   let _postfix = "&sportId=1"
 
-  const KEY_LEFT = 37;
-  const KEY_LEFT = 39;
   
   let _jsonResponse = {};
   let _currentSelection = {};
-  let _i = 1;
   let _gamesContainerLeftPos = 0;
-
 
   function _scaleDown (box) {
     let game = document.getElementById("game" + box + 'Image');
@@ -30,8 +51,8 @@ let mlb  = (function (){
     let game = document.getElementById("game" + box + 'Image');
 
     game.style.boxShadow = ".3rem .3rem .3rem whitesmoke";
-    game.style.transitionDuration = "3s";
-    game.style.transform = "scale(1.2, 1.6)";
+    game.style.transitionDuration = IMAGE_SCALE_DURATION_SECONDS + 's';
+    game.style.transform = 'scale(' + IMAGE_SCALE_X + ',' +  IMAGE_SCALE_Y + ')';
   } 
 
 
@@ -50,7 +71,6 @@ let mlb  = (function (){
     let game; 
     if (_jsonResponse && _jsonResponse.games && _jsonResponse.games[newSelection - 1]) {
       game = _jsonResponse.games[newSelection - 1];
-      //console.log('game - ', game);
     }
 
     if (game) {
@@ -59,7 +79,6 @@ let mlb  = (function (){
       
       if (teams && teams.home && teams.away && teams.home.team && teams.away.team && teams.home.team.name && teams.away.team.name &&
         (typeof teams.home.score === 'number') && (typeof teams.away.score === 'number')) {
-        //console.log('teams - ',  teams);
         let team = teams.home.team.name + ' ' + teams.home.score + ", " + teams.away.team.name + ' '+ teams.away.score;  
         let winner;
         let loser;
@@ -75,13 +94,13 @@ let mlb  = (function (){
         if (winner && loser) {
           winner = 'Winner: ' + winner;
           loser = 'Loser: ' + loser;
-          gameDescriptionBox.style.fontSize = "15px";
-          gameDescriptionBox.style.color = "orange";
-          gameDescriptionBox.style.marginTop = "60px";
-          gameDescriptionBox.style.marginLeft = "1px";
-          gameDescriptionBox.style.position = "absolute";
-          gameDescriptionBox.style.lineheight = "0px";
-          gameDescriptionBox.style.transitionDuration = "3s";
+          gameDescriptionBox.style.fontSize = GAME_DESCRIPTION_BOX_FONT_SIZE + 'px';
+          gameDescriptionBox.style.color = GAME_DESCRIPTION_BOX_COLOR;
+          gameDescriptionBox.style.marginTop = GAME_DESCRIPTION_MARGIN_TOP + 'px';
+          gameDescriptionBox.style.marginLeft = GAME_DESCRIPTION_MARGIN_LEFT + 'px';
+          gameDescriptionBox.style.position = GAME_DESCRIPTION_POSITION;
+          gameDescriptionBox.style.lineheight = GAME_DESCRIPTION_LINE_HEIGHT + 'px';
+          gameDescriptionBox.style.transitionDuration = TEXT_TRANSITION_DURATION_SECONDS + "s";
           gameDescriptionBox.innerHTML = team + "<br />" + winner + "<br />" + loser + "<br />";
         }
       }
@@ -92,10 +111,10 @@ let mlb  = (function (){
     
     let game;
     
-    _maxItems = _jsonResponse.totalItems;
-    _currentSelection.box = _defaultSelection;
+    _noOfItems = _jsonResponse.totalItems;
+    _currentSelection.box = INITIAL_SCALED_GAME;
 
-    for(let i = 0; i < _maxItems; i++) {
+    for(let i = 0; i < _noOfItems; i++) {
       let url;
       let gameImageBox;
       let gameHeaderBox;
@@ -107,9 +126,9 @@ let mlb  = (function (){
       if (venue && venue.name) {
         console.log('venue - ',  venue.name);
         gameHeaderBox.innerHTML = venue.name;
-        gameHeaderBox.style.fontSize = "large";
-        gameHeaderBox.style.color = "orange";
-        gameHeaderBox.style.marginBottom = "50px";
+        gameHeaderBox.style.fontSize = GAME_HEADER_BOX_FONT_SIZE;
+        gameHeaderBox.style.color = GAME_HEADER_BOX_COLOR;
+        gameHeaderBox.style.marginBottom = GAME_HEADER_BOX_MARGIN_BOTTOM + 'px';
       }
 
       if (_jsonResponse.games && _jsonResponse.games[i] && _jsonResponse.games[i].content && _jsonResponse.games[i].content.editorial) {
@@ -121,12 +140,12 @@ let mlb  = (function (){
         gameImageBox = document.getElementById('game' + (i+1) + 'Image');
         let url = 'url(' + editorial.recap.mlb.photo.cuts[_selectedImageIndex].src + ')';
         gameImageBox.style.backgroundImage = url;
-        gameImageBox.style.height = '55%';
+        gameImageBox.style.height = GAME_IMAGE_BOX_HEIGHT_PERCENT + '%';
       }
     }
     
-    _scaleUp(_defaultSelection);
-    _insertText(_defaultSelection);
+    _scaleUp(INITIAL_SCALED_GAME);
+    _insertText(INITIAL_SCALED_GAME);
 
     document.addEventListener('keydown', _onKeydown);
 
@@ -143,42 +162,34 @@ let mlb  = (function (){
     let oldSelection = _currentSelection.box;
     let newSelection = _currentSelection.box;
 
-    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _maxItems && e.keyCode === KEY_RIGHT))) 
+    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _noOfItems && e.keyCode === KEY_RIGHT))) 
       return;
     
     let gamesContainer = document.getElementById("flex-container");
     if (e.keyCode === KEY_LEFT) {
       newSelection--;
-      let newLeft = (220 * _i);
-      console.log('newSelection ' + newSelection + ' i ' + _i);
+      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
       var id = setInterval(() => {
         if (_gamesContainerLeftPos >= newLeft) {
-          console.log('_gamesContainerLeftPos ', _gamesContainerLeftPos);
           clearInterval(id);
         } else {
           _gamesContainerLeftPos = _gamesContainerLeftPos + 1; 
           gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
-          
         }
       }, 3);
-      _i++;
     }
 
     if (e.keyCode === KEY_RIGHT) {
       newSelection++;
-      let newLeft = (220 * _i);
-      console.log('newSelection ' + newSelection + ' i ' + _i);
+      let newLeft = (GAME_BOX_WIDTH * (INITIAL_SCALED_GAME - newSelection));
       let id = setInterval(() => {
         if (_gamesContainerLeftPos <= newLeft) {
-          console.log('_gamesContainerLeftPos ', _gamesContainerLeftPos);
           clearInterval(id);
-
         } else {
           _gamesContainerLeftPos = _gamesContainerLeftPos - 1; 
           gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
         }
       }, 3);
-      _i--;
     }
     _scaleDown(oldSelection);
     _scaleUp(newSelection);
@@ -188,6 +199,12 @@ let mlb  = (function (){
   }
 
   return {
+    /**
+     *
+     *
+     * @param {string} date
+     */
+
     displayResults: function (date) {
       let url =  _prefix + date + _postfix;
       fetch(url)
