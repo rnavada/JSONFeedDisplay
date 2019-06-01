@@ -1,16 +1,20 @@
-# JSONFeedDisplay
+# JSONFeedDisplay  
+Parse out the data for each game in the MLB JSON feed, and construct a simple list that the user can
+ navigate through with the keyboard (or remote), left and right.
 
 # Running the Application
+  1. git clone https://github.com/rnavada/JSONFeedDisplay.git
+  2. cd JSONFeedDisplay
 
 # Configuration
 
-# To Do
-1. 
 
 # Known issues
 
-# Limitations
-1. Has been tested with Chrome browser on a Ubuntu Linux based Desktop device. 
-2. Some of the numbers have been hardcoded. Might have to be modified depending upon the device.
+## Run Test
 
-overflow: hidden; //this prevents scroll bar dectating what we see initially.
+## Build Docs
+
+## Build
+
+## Referece
