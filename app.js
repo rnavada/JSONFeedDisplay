@@ -24,5 +24,4 @@ function mlbSelected () {
     console.log('new url - ', url);
     window.location.replace(url);
   }
-
 }

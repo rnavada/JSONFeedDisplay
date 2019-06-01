@@ -2,13 +2,16 @@
 let mlb  = (function (){
 
   'use strict';
+
   let _defaultSelection = 4;
   let _maxItems = 16;
   let _selectedImageIndex = 14; //Index of the Photo from editorial object
   let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
   let _postfix = "&sportId=1"
-  let _keyLeft = 37;
-  let _keyRight = 39;
+
+  const KEY_LEFT = 37;
+  const KEY_LEFT = 39;
+  
   let _jsonResponse = {};
   let _currentSelection = {};
   let _i = 1;
@@ -113,19 +116,18 @@ let mlb  = (function (){
         editorial = _jsonResponse.games[i].content.editorial;
       }
 
-      if (editorial) {
-        if (editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && editorial.recap.mlb.photo.cuts &&
-          editorial.recap.mlb.photo.cuts[_selectedImageIndex] && editorial.recap.mlb.photo.cuts[_selectedImageIndex].src) {
-          gameImageBox = document.getElementById('game' + (i+1) + 'Image');
-          let url = 'url(' + editorial.recap.mlb.photo.cuts[_selectedImageIndex].src + ')';
-          gameImageBox.style.backgroundImage = url;
-          gameImageBox.style.height = '55%';
-        }
-      } 
+      if (editorial && editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && editorial.recap.mlb.photo.cuts &&
+        editorial.recap.mlb.photo.cuts[_selectedImageIndex] && editorial.recap.mlb.photo.cuts[_selectedImageIndex].src) {
+        gameImageBox = document.getElementById('game' + (i+1) + 'Image');
+        let url = 'url(' + editorial.recap.mlb.photo.cuts[_selectedImageIndex].src + ')';
+        gameImageBox.style.backgroundImage = url;
+        gameImageBox.style.height = '55%';
+      }
     }
-    console.log('about to insert text ');
+    
     _scaleUp(_defaultSelection);
     _insertText(_defaultSelection);
+
     document.addEventListener('keydown', _onKeydown);
 
   }
@@ -134,18 +136,18 @@ let mlb  = (function (){
   function _onKeydown (e) {
     console.log('onKeydown - ', e.keyCode, e);
 
-    if (e.keyCode !== _keyLeft && e.keyCode !== _keyRight) {
+    if (e.keyCode !== KEY_LEFT && e.keyCode !== KEY_RIGHT) {
       return;
     }
 
     let oldSelection = _currentSelection.box;
     let newSelection = _currentSelection.box;
 
-    if((oldSelection == 1 && e.keyCode === _keyLeft) || ((oldSelection == _maxItems && e.keyCode === _keyRight))) 
+    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _maxItems && e.keyCode === KEY_RIGHT))) 
       return;
     
     let gamesContainer = document.getElementById("flex-container");
-    if (e.keyCode === _keyLeft) {
+    if (e.keyCode === KEY_LEFT) {
       newSelection--;
       let newLeft = (220 * _i);
       console.log('newSelection ' + newSelection + ' i ' + _i);
@@ -162,7 +164,7 @@ let mlb  = (function (){
       _i++;
     }
 
-    if (e.keyCode === _keyRight) {
+    if (e.keyCode === KEY_RIGHT) {
       newSelection++;
       let newLeft = (220 * _i);
       console.log('newSelection ' + newSelection + ' i ' + _i);
