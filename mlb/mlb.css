@@ -1,0 +1,64 @@
+.container, html, body {
+  height: 100%;
+  background-image: url("http://mlb.mlb.com/mlb/images/devices/ballpark/1920x1080/1.jpg");
+  overflow: hidden; 
+}
+
+.flex-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  left: 80;
+  top: 30%;
+  }
+  
+.flex-container > div {
+  width: 248px;
+  height: 238px;
+  margin: 15px;
+  border-radius: 3px;
+  
+}
+
+.overlay {
+  position: fixed;
+  z-index: 1;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0, 0.9);
+  overflow-x: hidden;
+}
+
+.header {
+  text-align: center;
+  background: lightgoldenrodyellow;
+  color: red;
+  font-size: 30px;
+}
+
+.grid-container {
+  grid-gap: 10px;
+  padding: 10px;
+  background-color: #2196F3;
+  display: none;
+  width: 300px;
+  margin-left: 400px;
+  border-radius: 4px;
+  
+}
+
+.grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid grey;
+  text-align: center;
+  font-size: 15px;
+  width: 35px;
+  border-radius: 4px;
+}
+
+
+
+
+
+
+
+
