@@ -34,6 +34,15 @@ let mlb  = (function (){
   const GAME_HEADER_BOX_COLOR = "orange";
   const GAME_HEADER_BOX_MARGIN_BOTTOM = 50;
 
+  const OVERLAY_MARGIN_LEFT = 400;
+  const OVERLAY_MARGIN_TOP = 100;
+  const OVERLAY_WIDTH = 1200;
+  const OVERLAY_HEIGHT = 800;
+
+  const SCORE_ITEM_WIDTH = 150;
+  const SCORE_ITEM_BACKGROUND_COLOR = '#2196F3';
+  const SCORE_ITEM_BORDER_COLOR = '#2196F3';
+
   let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),score,decisions&date=";
   let _postfix = "&sportId=1"
 
@@ -123,32 +132,34 @@ let mlb  = (function (){
       if (json) {
         console.log('response ', json);
 
-        let overlay = document.getElementById("myNav");
-        overlay.style.display = "block";
-        overlay.style.marginLeft = '400px';
-        overlay.style.marginTop = '100px';
-        overlay.style.width = '1200px';
-        overlay.style.height = '800px';
+        let overlay = document.getElementById("overlay");
 
+        
+        overlay.style.display = "block";
+        overlay.style.marginLeft = OVERLAY_MARGIN_LEFT + 'px';
+        overlay.style.marginTop = OVERLAY_MARGIN_TOP + 'px';
+        overlay.style.width = OVERLAY_WIDTH + 'px';
+        overlay.style.height = OVERLAY_HEIGHT + 'px';
 
         let titleBox = document.getElementById('overlayheader');
         titleBox.style.justifyContent = 'center';
 
-        
-        let awayRuns = json.liveData.linescore.teams.away.runs;
-        let homeRuns = json.liveData.linescore.teams.home.runs;
-
-        let title = json.gameData.teams.home.teamName + ' ' + homeRuns + ', ' ; 
-        title = title + json.gameData.teams.away.teamName + ' ' + awayRuns;
-
-        title = title + "<br />" + json.gameData.datetime.originalDate;
-        titleBox.innerHTML = title;
-
+        if (json.liveData && json.liveData.linescore && json.liveData.linescore.teams && 
+           json.liveData.linescore.teams.away.runs &&  json.liveData.linescore.teams.home.runs) {
+          let awayRuns = json.liveData.linescore.teams.away.runs;
+          let homeRuns = json.liveData.linescore.teams.home.runs;
+          let homeName = json.gameData.teams.home.teamName;
+          let awayName = json.gameData.teams.away.teamName;
+          let title = homeName + ' ' + homeRuns + ', ' + awayName + ' ' + awayRuns;
+          let originalDate = json.gameData.datetime.originalDate;
+          title = title + "<br />" + originalDate;
+          titleBox.innerHTML = title;
+        }
+       
         let innings = json.liveData.linescore.innings;
         let gridContainer = document.getElementById('grid-container-innings');;
         gridContainer.style.display = "flex";
         gridContainer.style.flexdirection = 'row';
-
 
         gridContainer = document.getElementById('grid-container-away');;
         gridContainer.style.display = "flex";
@@ -158,26 +169,24 @@ let mlb  = (function (){
         gridContainer.style.display = "flex";
         gridContainer.style.flexdirection = 'row';
 
-
         let index = 1;
         let scoreBox;
         scoreBox = document.getElementById('innings-grid-0');
-        scoreBox.style.width = '150px'
-        scoreBox.style.backgroundColor = '#2196F3';
-        scoreBox.style.borderColor = '#2196F3';
+        scoreBox.style.width = SCORE_ITEM_WIDTH + 'px'
+        scoreBox.style.backgroundColor = SCORE_ITEM_BACKGROUND_COLOR;
+        scoreBox.style.borderColor = SCORE_ITEM_BORDER_COLOR;
         scoreBox = document.getElementById('away-grid-' + 0);;
         scoreBox.innerHTML = json.gameData.teams.away.teamName + '';
-        scoreBox.style.width = '150px'
+        scoreBox.style.width = SCORE_ITEM_WIDTH + 'px'
         scoreBox = document.getElementById('home-grid-' + 0);
         scoreBox.innerHTML = json.gameData.teams.home.teamName + '';
-        scoreBox.style.width = '150px'
+        scoreBox.style.width =SCORE_ITEM_WIDTH + 'px'
 
         innings.forEach((inning) => {
-          console.log('inning - ' + index + ' ' + inning.away.runs + ' ' + inning.home.runs);
           scoreBox = document.getElementById('away-grid-' + index);;
           scoreBox.innerHTML = inning.away.runs + '';
           scoreBox = document.getElementById('home-grid-' + index);
-          if (typeof inning.home.runs == 'undefined') {
+          if (typeof inning.home.runs === 'undefined') {
             scoreBox.innerHTML ='x';
           } else {
             scoreBox.innerHTML = inning.home.runs + '';
@@ -208,7 +217,7 @@ let mlb  = (function (){
     }
 
     if (e.keyCode === KEY_ESCAPE) {
-      document.getElementById("myNav").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
       return;
     }
 
