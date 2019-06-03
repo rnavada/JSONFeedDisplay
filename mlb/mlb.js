@@ -8,6 +8,9 @@ let mlb  = (function (){
 
   const KEY_LEFT = 37;
   const KEY_RIGHT = 39;
+  const KEY_ENTER = 13;
+  const KEY_ESCAPE = 27;
+
   const INITIAL_SCALED_GAME = 4
   const GAME_BOX_WIDTH = 240;
   const TEXT_TRANSITION_DURATION_SECONDS = 4;
@@ -31,7 +34,7 @@ let mlb  = (function (){
   const GAME_HEADER_BOX_COLOR = "orange";
   const GAME_HEADER_BOX_MARGIN_BOTTOM = 50;
 
-  let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=";
+  let _prefix = "http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),score,decisions&date=";
   let _postfix = "&sportId=1"
 
   let _jsonResponse = {};
@@ -105,19 +108,112 @@ let mlb  = (function (){
     }
   }
 
-  
+  function displayFullGameInfo () {
+
+    let game = _jsonResponse.games[_selectedGame - 1];
+
+    console.log('game - ');
+    let gamePk = game.gamePk;
+
+    let url = 'https://statsapi.mlb.com/api/v1.1/game/' + gamePk + '/feed/live';
+    
+    fetch(url)
+    .then(response => response.json())
+    .then((json) => {
+      if (json) {
+        console.log('response ', json);
+
+        let overlay = document.getElementById("myNav");
+        overlay.style.display = "block";
+        overlay.style.marginLeft = '400px';
+        overlay.style.marginTop = '100px';
+        overlay.style.width = '1200px';
+        overlay.style.height = '800px';
+
+
+        let titleBox = document.getElementById('overlayheader');
+        titleBox.style.justifyContent = 'center';
+
+        
+        let awayRuns = json.liveData.linescore.teams.away.runs;
+        let homeRuns = json.liveData.linescore.teams.home.runs;
+
+        let title = json.gameData.teams.home.teamName + ' ' + homeRuns + ', ' ; 
+        title = title + json.gameData.teams.away.teamName + ' ' + awayRuns;
+
+        title = title + "<br />" + json.gameData.datetime.originalDate;
+        titleBox.innerHTML = title;
+
+        let innings = json.liveData.linescore.innings;
+        let gridContainer = document.getElementById('grid-container-innings');;
+        gridContainer.style.display = "flex";
+        gridContainer.style.flexdirection = 'row';
+
+
+        gridContainer = document.getElementById('grid-container-away');;
+        gridContainer.style.display = "flex";
+        gridContainer.style.flexdirection = 'row';
+
+        gridContainer = document.getElementById('grid-container-home');;
+        gridContainer.style.display = "flex";
+        gridContainer.style.flexdirection = 'row';
+
+
+        let index = 1;
+        let scoreBox;
+        scoreBox = document.getElementById('innings-grid-0');
+        scoreBox.style.width = '150px'
+        scoreBox.style.backgroundColor = '#2196F3';
+        scoreBox.style.borderColor = '#2196F3';
+        scoreBox = document.getElementById('away-grid-' + 0);;
+        scoreBox.innerHTML = json.gameData.teams.away.teamName + '';
+        scoreBox.style.width = '150px'
+        scoreBox = document.getElementById('home-grid-' + 0);
+        scoreBox.innerHTML = json.gameData.teams.home.teamName + '';
+        scoreBox.style.width = '150px'
+
+        innings.forEach((inning) => {
+          console.log('inning - ' + index + ' ' + inning.away.runs + ' ' + inning.home.runs);
+          scoreBox = document.getElementById('away-grid-' + index);;
+          scoreBox.innerHTML = inning.away.runs + '';
+          scoreBox = document.getElementById('home-grid-' + index);
+          if (typeof inning.home.runs == 'undefined') {
+            scoreBox.innerHTML ='x';
+          } else {
+            scoreBox.innerHTML = inning.home.runs + '';
+          }
+          index++; 
+        });
+      } else {
+        console.log('No data in game details response');
+      }
+    })
+    .catch(error => console.error('Error:', error));
+
+  }
 
   function _onKeydown (e) {
     console.log('onKeydown - ', e.keyCode, e);
 
-    if (e.keyCode !== KEY_LEFT && e.keyCode !== KEY_RIGHT) {
+    if (e.keyCode !== KEY_LEFT && e.keyCode !== KEY_RIGHT && e.keyCode !== KEY_ENTER && e.keyCode !== KEY_ESCAPE) {
       return;
     }
 
     let oldSelection = _selectedGame;
     let newSelection = _selectedGame;
 
-    if((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _jsonResponse.totalItems && e.keyCode === KEY_RIGHT))) 
+    if (e.keyCode === KEY_ENTER) {
+      displayFullGameInfo();
+      return;
+    }
+
+    if (e.keyCode === KEY_ESCAPE) {
+      document.getElementById("myNav").style.display = "none";
+      return;
+    }
+
+
+    if ((oldSelection == 1 && e.keyCode === KEY_LEFT) || ((oldSelection == _jsonResponse.totalItems && e.keyCode === KEY_RIGHT))) 
       return;
     
     let gamesContainer = document.getElementById("flex-container");
@@ -144,6 +240,7 @@ let mlb  = (function (){
           _gamesContainerLeftPos = _gamesContainerLeftPos - 1; 
           gamesContainer.style.left = _gamesContainerLeftPos + 'px'; 
         }
+        
       }, GAMES_CONTAINER_TRANSITION_DURATION_SECONDS);
     }
     _scaleDown(oldSelection);
@@ -184,14 +281,11 @@ let mlb  = (function (){
         gameImageBox.style.height = GAME_IMAGE_BOX_HEIGHT_PERCENT + '%';
       }
     }
-
     _scaleUp(INITIAL_SCALED_GAME);
-    console.log('about to scale up');
     _insertText(INITIAL_SCALED_GAME);
   }
 
   function processJson(jsonResponse) {
-    console.log(_jsonResponse);
 
     if(!jsonResponse)
       return;
@@ -214,6 +308,8 @@ let mlb  = (function (){
           obj.decisions = jsonResponse.games[i].decisions;
         }
 
+        obj.gamePk = jsonResponse.games[i].gamePk;
+
         if (jsonResponse.games[i].content && jsonResponse.games[i].content.editorial) {
           let editorial = jsonResponse.games[i].content.editorial;
           if (editorial && editorial.recap && editorial.recap.mlb && editorial.recap.mlb.photo && editorial.recap.mlb.photo.cuts &&
@@ -226,8 +322,7 @@ let mlb  = (function (){
       _jsonResponse.games.push(obj);
     }
     console.log(_jsonResponse);
-
-  } 
+   } 
 
   function registerListeners() {
     document.addEventListener('keydown', _onKeydown);
