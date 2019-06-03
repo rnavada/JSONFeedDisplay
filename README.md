@@ -20,6 +20,7 @@ navigate through with the keyboard, left and right.
   7. If you dont enter any date, the app will display results for that particular day.
   
 ## Application screenshots
+![alt text](https://github.com/rnavada/JSONFeedDisplay/blob/feature/init_dev/mlb/images/Screenshot%20from%202019-06-02%2021-56-03.png)
 
 ## Testing
   The project has been tested only on Chrome and Firefox browsers.
