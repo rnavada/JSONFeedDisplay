@@ -27,6 +27,6 @@ navigate through with the keyboard, left and right.
 ## Build
 
 ## Referece
-https://www.pythonforbeginners.com/modules-in-python/how-to-use-simplehttpserver/
-For a prticualar day schedule: http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2018-06-10&sportId=1
-For game specific information: http://statsapi.mlb.com/api/v1.1/game/567087/feed/live
+  1. https://www.pythonforbeginners.com/modules-in-python/how-to-use-simplehttpserver/
+  2. For a prticualar day schedule: http://statsapi.mlb.com/api/v1/schedule?hydrate=game(content(editorial(recap))),decisions&date=2018-06-10&sportId=1
+  3. For game specific information: http://statsapi.mlb.com/api/v1.1/game/567087/feed/live
