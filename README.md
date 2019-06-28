@@ -1,4 +1,4 @@
-JSONFeedDisplay  
+JSONFeedDisplay1  
 ---------------
 
 This project parses out the data for each game in the MLB JSON feed, and construct a simple list that the user can
